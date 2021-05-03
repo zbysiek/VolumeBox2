@@ -91,7 +91,7 @@ void loop() {
         Consumer.write(MEDIA_NEXT);
     }
     //1st encoder
-    if (encoder1.read() < lastEncoder1 - 4){
+    if (encoder1.read() <= lastEncoder1 - 4){
 		lastEncoder1 = encoder1.read();
         Keyboard.press(KEY_RIGHT_CTRL);
         Keyboard.press(KEY_RIGHT_SHIFT);
@@ -101,7 +101,7 @@ void loop() {
         Keyboard.release(KEY_RIGHT_CTRL);
         Keyboard.release(KEY_RIGHT_SHIFT);
 	}
-    if (encoder1.read() > lastEncoder1 + 3){
+    if (encoder1.read() >= lastEncoder1 + 4){
 		lastEncoder1 = encoder1.read();
         Keyboard.press(KEY_RIGHT_CTRL);
         Keyboard.press(KEY_RIGHT_SHIFT);
@@ -112,7 +112,7 @@ void loop() {
         Keyboard.release(KEY_RIGHT_SHIFT);
 	}
     //2nd encoder
-    if (encoder0.read() < lastEncoder0 - 3){
+    if (encoder0.read() <= lastEncoder0 - 4){
 		lastEncoder0 = encoder0.read();
         // Keyboard.press(KEY_RIGHT_ALT);
         Keyboard.press(KEY_RIGHT_WINDOWS);
@@ -124,7 +124,7 @@ void loop() {
         Keyboard.release(KEY_RIGHT_WINDOWS);
         Keyboard.release(KEY_RIGHT_SHIFT);
 	}
-    if (encoder0.read() > lastEncoder0 + 3){
+    if (encoder0.read() >= lastEncoder0 + 4){
 		lastEncoder0 = encoder0.read();
         // Keyboard.press(KEY_RIGHT_ALT);
         Keyboard.press(KEY_RIGHT_WINDOWS);
