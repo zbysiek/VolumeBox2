@@ -1,26 +1,13 @@
-/*
-BUTTON0           BUTTON1
-
-SHORT CLICK       SHORT CLICK
-MUTE ALL          PLAY/PAUSE
-
-DOUBLE CLICK      DOUBLE CLICK
-LOCK WINDOWS      LAUNCH MEDIA PLAYER (Add/Change in registry at "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\15" : the first type idk what it is in english, ShellExecute , "x:/pathToYourMusicPlayer/MusicPlayer.exe")
-
-LONG PRESS        LONG PRESS
-TS3 MUTE          NEXT SONG
-*/
-
-
 #include <Arduino.h>
 #include <stdint.h>
 
 #include "HID-Project.h"
 #include "HID-Settings.h"
-#include "ButtonBox.hpp"
 #include "Encoder.h"
-#include <PinButton.h>
+#include <PinButton.h> // Double/single/long press
 
+#define ENCODER_USE_INTERRUPTS
+#define ENCODER_OPTIMIZE_INTERRUPTS
 long ANTISCROLL = 10;
 long PRESS_TIME = 15;
 
@@ -38,7 +25,6 @@ int32_t lastEncoder1 = 0;
 
 void setup() {
     //Serial.begin(9600);
-
 	encoder0.write(0);
 	encoder1.write(0);
     Gamepad.begin();
@@ -46,7 +32,6 @@ void setup() {
     Consumer.begin();
     Keyboard.begin();
     Mouse.begin();
-
     delay(1000);
 }
 
@@ -84,7 +69,7 @@ void loop() {
     }
     if (encoder_button1.isDoubleClick())
     {
-        Consumer.write(CONSUMER_EMAIL_READER); // (need to set up in registry, see at the top)
+        Consumer.write(CONSUMER_EMAIL_READER); // (need to set up in registry, see at the bottom)
     }
     if (encoder_button1.isLongClick())
     {
@@ -137,3 +122,25 @@ void loop() {
         Keyboard.release(KEY_RIGHT_WINDOWS);
 	} 
 }
+
+
+/*
+BUTTON0           BUTTON1
+
+SHORT CLICK       SHORT CLICK
+MUTE ALL          PLAY/PAUSE
+
+DOUBLE CLICK      DOUBLE CLICK
+LOCK WINDOWS      LAUNCH MEDIA PLAYER (Add/Change in registry at "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\15" : the first type idk what it is in english, ShellExecute , "x:/pathToYourMusicPlayer/MusicPlayer.exe")
+
+LONG PRESS        LONG PRESS
+TS3 MUTE          NEXT SONG
+*/
+
+/* My pinout:
+    Encoder0: Button 9, Rotary 4,3
+    Encoder1: Button 2, Rotary 7,6
+    // Pin 7 and 3 is an interrupt 
+*/
+
+
