@@ -22,7 +22,6 @@ int32_t lastEncoder0 = 0;
 int32_t lastEncoder1 = 0;
 
 
-
 void setup() {
     //Serial.begin(9600);
     encoder0.write(0);
@@ -125,16 +124,16 @@ void loop() {
 
 
 /*
-BUTTON0           BUTTON1
+    BUTTON0                 BUTTON1
 
-SHORT CLICK       SHORT CLICK
-MUTE ALL          PLAY/PAUSE
+    SHORT CLICK             SHORT CLICK
+    MUTE ALL                PLAY/PAUSE
 
-DOUBLE CLICK      DOUBLE CLICK
-LOCK WINDOWS      LAUNCH MEDIA PLAYER (Add/Change in registry at "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\15" : the first type idk what it is in english, ShellExecute , "x:/pathToYourMusicPlayer/MusicPlayer.exe")
+    DOUBLE CLICK            DOUBLE CLICK
+    LOCK WINDOWS            LAUNCH MEDIA PLAYER (Add/Change in registry at "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\15" : the first type idk what it is in english, ShellExecute , "x:/pathToYourMusicPlayer/MusicPlayer.exe")
 
-LONG PRESS        LONG PRESS
-TS3 MUTE          NEXT SONG
+    LONG PRESS              LONG PRESS
+    TS3 MUTE(CTRL+F9)       NEXT SONG
 */
 
 /* My pinout:
