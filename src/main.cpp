@@ -25,8 +25,8 @@ int32_t lastEncoder1 = 0;
 
 void setup() {
     //Serial.begin(9600);
-	encoder0.write(0);
-	encoder1.write(0);
+    encoder0.write(0);
+    encoder1.write(0);
     Gamepad.begin();
     Gamepad.end();
     Consumer.begin();
@@ -77,7 +77,7 @@ void loop() {
     }
     //1st encoder
     if (encoder1.read() <= lastEncoder1 - 4){
-		lastEncoder1 = encoder1.read();
+        lastEncoder1 = encoder1.read();
         Keyboard.press(KEY_RIGHT_CTRL);
         Keyboard.press(KEY_RIGHT_SHIFT);
         delay(ANTISCROLL);
@@ -87,7 +87,7 @@ void loop() {
         Keyboard.release(KEY_RIGHT_SHIFT);
 	}
     if (encoder1.read() >= lastEncoder1 + 4){
-		lastEncoder1 = encoder1.read();
+        lastEncoder1 = encoder1.read();
         Keyboard.press(KEY_RIGHT_CTRL);
         Keyboard.press(KEY_RIGHT_SHIFT);
         delay(ANTISCROLL);
@@ -98,7 +98,7 @@ void loop() {
 	}
     //2nd encoder
     if (encoder0.read() <= lastEncoder0 - 4){
-		lastEncoder0 = encoder0.read();
+        lastEncoder0 = encoder0.read();
         // Keyboard.press(KEY_RIGHT_ALT);
         Keyboard.press(KEY_RIGHT_WINDOWS);
         Keyboard.press(KEY_RIGHT_SHIFT);
@@ -110,7 +110,7 @@ void loop() {
         Keyboard.release(KEY_RIGHT_SHIFT);
 	}
     if (encoder0.read() >= lastEncoder0 + 4){
-		lastEncoder0 = encoder0.read();
+        lastEncoder0 = encoder0.read();
         // Keyboard.press(KEY_RIGHT_ALT);
         Keyboard.press(KEY_RIGHT_WINDOWS);
         Keyboard.press(KEY_RIGHT_SHIFT);
