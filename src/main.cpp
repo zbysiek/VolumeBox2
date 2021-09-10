@@ -3,143 +3,129 @@
 
 #include "HID-Project.h"
 #include "HID-Settings.h"
-#include "Encoder.h"
+#include <math.h>
+#include <Encoder.h>
 #include <PinButton.h> // Double/single/long press
-
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_OPTIMIZE_INTERRUPTS
-long ANTISCROLL = 10;
-long PRESS_TIME = 15;
-
+int PRESS_TIME = 15;
+const int NUM_SLIDERS = 2;
+int analogSliderValues[NUM_SLIDERS];
+int Gaming, Music;
+//Encoder
+Encoder knobGaming(3, 4);
+Encoder knobMusic(6, 7);
 //Encoder button
 PinButton encoder_button0(9);
 PinButton encoder_button1(2);
 
-//Encoder
-Encoder encoder0(4,3);
-Encoder encoder1(7,6);
-int32_t lastEncoder0 = 0;
-int32_t lastEncoder1 = 0;
-
-
 void setup() {
-    //Serial.begin(9600);
-    encoder0.write(0);
-    encoder1.write(0);
-    Gamepad.begin();
-    Gamepad.end();
-    Consumer.begin();
-    Keyboard.begin();
-    Mouse.begin();
-    delay(1000);
+  Serial.begin(9600);
+  analogSliderValues[0] = 512;
+  knobGaming.write(102);
+  analogSliderValues[1] = 512;
+  knobMusic.write(102);
 }
+
+void sendSliderValues() {
+  String builtString = String("");
+  for (int i = 0; i < NUM_SLIDERS; i++) {
+    builtString += String((int)analogSliderValues[i]);
+    if (i < NUM_SLIDERS - 1) {
+      builtString += String("|");
+    }
+  }
+  Serial.println(builtString);
+}
+
+void printSliderValues(){
+  for (int i = 0; i < NUM_SLIDERS; i++) {
+    String printedString = String("Slider #") + String(i + 1) + String(": ") + String(analogSliderValues[i]) + String(" mV");
+    Serial.write(printedString.c_str());
+    if (i < NUM_SLIDERS - 1) {
+      Serial.write(" | ");
+    }else{
+      Serial.write("\n");
+    }
+  }
+}
+
+void checkEncoders(){
+  //GAMING
+  //Emulate an axis
+  if (Gaming > 0 && Gaming < 204){
+    analogSliderValues[0]=Gaming*5;    
+  }
+  //Lock if it's too high
+  else if (Gaming >= 204){
+    analogSliderValues[0]=204*5;
+    knobGaming.write(204);
+  //Lock if it's too low 
+  }else{
+    analogSliderValues[0]=0;
+    knobGaming.write(0);
+  }
+  //MUSIC
+  //Emulate an axis
+  if (Music > 0 && Music < 204){
+    analogSliderValues[1]= Music*5;
+  }
+  //Lock if it's too high
+  else if (Music >= 204){
+    analogSliderValues[1]=204*5;
+    knobMusic.write(204);
+  //Lock if it's too low 
+  }else{
+    analogSliderValues[1]=0;
+    knobMusic.write(0);
+  }
+}
+
 
 void loop() {
-    //Update state
-    encoder_button0.update();
-    encoder_button1.update();
-
-    //Press gamepad
-    //Buttons
-    if (encoder_button0.isSingleClick())
-    {
-        Consumer.write(MEDIA_VOLUME_MUTE);
+  unsigned long time_now = millis();
+  //Update state
+  encoder_button0.update();
+  encoder_button1.update();
+  //Buttons
+  if (encoder_button0.isSingleClick())
+  {
+    Consumer.write(MEDIA_VOLUME_MUTE);
+  }
+  if (encoder_button0.isDoubleClick())
+  {
+    Keyboard.press(KEY_LEFT_WINDOWS);
+    Keyboard.press(KEY_L);
+    if (millis() < time_now + PRESS_TIME){
+      Keyboard.release(KEY_LEFT_WINDOWS);
+      Keyboard.release(KEY_L);
     }
-    if (encoder_button0.isDoubleClick())
-    {
-        Keyboard.press(KEY_LEFT_WINDOWS);
-        Keyboard.press(KEY_L);
-        delay(PRESS_TIME);
-        Keyboard.release(KEY_LEFT_WINDOWS);
-        Keyboard.release(KEY_L);
+  }
+  if (encoder_button0.isLongClick())
+  {
+    Keyboard.press(KEY_RIGHT_CTRL);
+    Keyboard.press(KEY_F9);
+    if (millis() < time_now + PRESS_TIME){
+      Keyboard.release(KEY_RIGHT_CTRL);
+      Keyboard.release(KEY_F9);
     }
-    if (encoder_button0.isLongClick())
-    {
-        Keyboard.press(KEY_RIGHT_CTRL);
-        Keyboard.press(KEY_F9);
-        delay(PRESS_TIME);
-        Keyboard.release(KEY_RIGHT_CTRL);
-        Keyboard.release(KEY_F9);
-    }
-
-    if (encoder_button1.isSingleClick())
-    {
-        Consumer.write(MEDIA_PLAY_PAUSE);
-    }
-    if (encoder_button1.isDoubleClick())
-    {
-        Consumer.write(CONSUMER_EMAIL_READER); // (need to set up in registry, see at the bottom)
-    }
-    if (encoder_button1.isLongClick())
-    {
-        Consumer.write(MEDIA_NEXT);
-    }
-    //1st encoder
-    if (encoder1.read() <= lastEncoder1 - 4){
-        lastEncoder1 = encoder1.read();
-        Keyboard.press(KEY_RIGHT_CTRL);
-        Keyboard.press(KEY_RIGHT_SHIFT);
-        delay(ANTISCROLL);
-        Mouse.move(0,0,1);
-        delay(ANTISCROLL);
-        Keyboard.release(KEY_RIGHT_CTRL);
-        Keyboard.release(KEY_RIGHT_SHIFT);
-	}
-    if (encoder1.read() >= lastEncoder1 + 4){
-        lastEncoder1 = encoder1.read();
-        Keyboard.press(KEY_RIGHT_CTRL);
-        Keyboard.press(KEY_RIGHT_SHIFT);
-        delay(ANTISCROLL);
-        Mouse.move(0,0,-1);
-        delay(ANTISCROLL);
-        Keyboard.release(KEY_RIGHT_CTRL);
-        Keyboard.release(KEY_RIGHT_SHIFT);
-	}
-    //2nd encoder
-    if (encoder0.read() <= lastEncoder0 - 4){
-        lastEncoder0 = encoder0.read();
-        // Keyboard.press(KEY_RIGHT_ALT);
-        Keyboard.press(KEY_RIGHT_WINDOWS);
-        Keyboard.press(KEY_RIGHT_SHIFT);
-        delay(ANTISCROLL);
-        Mouse.move(0,0,1);
-        delay(ANTISCROLL);
-        // Keyboard.release(KEY_RIGHT_ALT);
-        Keyboard.release(KEY_RIGHT_WINDOWS);
-        Keyboard.release(KEY_RIGHT_SHIFT);
-	}
-    if (encoder0.read() >= lastEncoder0 + 4){
-        lastEncoder0 = encoder0.read();
-        // Keyboard.press(KEY_RIGHT_ALT);
-        Keyboard.press(KEY_RIGHT_WINDOWS);
-        Keyboard.press(KEY_RIGHT_SHIFT);
-        delay(ANTISCROLL);
-        Mouse.move(0,0,-1);
-        delay(ANTISCROLL);
-        // Keyboard.release(KEY_RIGHT_ALT);
-        Keyboard.release(KEY_RIGHT_SHIFT);
-        Keyboard.release(KEY_RIGHT_WINDOWS);
-	} 
+  }
+  if (encoder_button1.isSingleClick())
+  {
+    Consumer.write(MEDIA_PLAY_PAUSE);
+  }
+  if (encoder_button1.isDoubleClick())
+  {
+    Consumer.write(CONSUMER_EMAIL_READER); 
+    //need to set up in registry, see at the bottom
+  }
+  if (encoder_button1.isLongClick())
+  {
+    Consumer.write(MEDIA_NEXT);
+  }
+  Gaming = knobGaming.read();
+  Music = knobMusic.read();
+  checkEncoders();
+  sendSliderValues();
+// printSliderValues();//debug
 }
-
-
-/*
-    BUTTON0                 BUTTON1
-
-    SHORT CLICK             SHORT CLICK
-    MUTE ALL                PLAY/PAUSE
-
-    DOUBLE CLICK            DOUBLE CLICK
-    LOCK WINDOWS            LAUNCH MEDIA PLAYER (Add/Change in registry at "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\15" : the first type idk what it is in english, ShellExecute , "x:/pathToYourMusicPlayer/MusicPlayer.exe")
-
-    LONG PRESS              LONG PRESS
-    TS3 MUTE(CTRL+F9)       NEXT SONG
-*/
-
-/* My pinout:
-    Encoder0: Button 9, Rotary 4,3
-    Encoder1: Button 2, Rotary 7,6
-    // Pin 7 and 3 is an interrupt 
-*/
-
-
