@@ -3,3 +3,6 @@ A device that controls current app and music player volume in logarithmic fashio
 
 3D Model:
 https://www.thingiverse.com/thing:4847671
+
+Based on:
+https://github.com/SNR-Tech-Bytes/deej_encoder
