@@ -8,7 +8,7 @@
 #include <PinButton.h> // Double/single/long press
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_OPTIMIZE_INTERRUPTS
-int PRESS_TIME = 15;
+const int PRESS_TIME = 15;
 const int NUM_SLIDERS = 2;
 int analogSliderValues[NUM_SLIDERS];
 int Gaming, Music;
@@ -21,21 +21,24 @@ PinButton encoder_button1(2);
 
 void setup() {
   Serial.begin(9600);
+  Consumer.begin();
+  Keyboard.begin();
   analogSliderValues[0] = 512;
   knobGaming.write(102);
   analogSliderValues[1] = 512;
   knobMusic.write(102);
+  delay(1000);
 }
 
 void sendSliderValues() {
-  String builtString = String("");
-  for (int i = 0; i < NUM_SLIDERS; i++) {
-    builtString += String((int)analogSliderValues[i]);
-    if (i < NUM_SLIDERS - 1) {
-      builtString += String("|");
+    String builtString = String("");
+    for (int i = 0; i < NUM_SLIDERS; i++) {
+      builtString += String((int)analogSliderValues[i]);
+      if (i < NUM_SLIDERS - 1) {
+        builtString += String("|");
+      }
     }
-  }
-  Serial.println(builtString);
+    Serial.println(builtString);
 }
 
 void printSliderValues(){
@@ -54,11 +57,11 @@ void checkEncoders(){
   //GAMING
   //Emulate an axis
   if (Gaming > 0 && Gaming < 204){
-    analogSliderValues[0]=Gaming*5;    
+    analogSliderValues[0]=Gaming*5;   
   }
   //Lock if it's too high
   else if (Gaming >= 204){
-    analogSliderValues[0]=204*5;
+    analogSliderValues[0]=1020;
     knobGaming.write(204);
   //Lock if it's too low 
   }else{
@@ -72,7 +75,7 @@ void checkEncoders(){
   }
   //Lock if it's too high
   else if (Music >= 204){
-    analogSliderValues[1]=204*5;
+    analogSliderValues[1]=1020;
     knobMusic.write(204);
   //Lock if it's too low 
   }else{
@@ -81,13 +84,8 @@ void checkEncoders(){
   }
 }
 
-
-void loop() {
+void checkButtons(){
   unsigned long time_now = millis();
-  //Update state
-  encoder_button0.update();
-  encoder_button1.update();
-  //Buttons
   if (encoder_button0.isSingleClick())
   {
     Consumer.write(MEDIA_VOLUME_MUTE);
@@ -123,9 +121,41 @@ void loop() {
   {
     Consumer.write(MEDIA_NEXT);
   }
+}
+
+void loop() {
+  //Update state
+  encoder_button0.update();
+  encoder_button1.update();
   Gaming = knobGaming.read();
   Music = knobMusic.read();
+  //Send State
+  checkButtons();
   checkEncoders();
   sendSliderValues();
-// printSliderValues();//debug
+  //printSliderValues();//debug
 }
+
+/*
+    BUTTON0                 BUTTON1
+
+    SHORT CLICK             SHORT CLICK
+    MUTE ALL                PLAY/PAUSE
+
+    DOUBLE CLICK            DOUBLE CLICK
+    LOCK WINDOWS            LAUNCH MEDIA PLAYER*
+
+    LONG PRESS              LONG PRESS
+    TS3 MUTE(CTRL+F9)       NEXT SONG
+
+    * - (Add/Change in registry at HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\15 :
+         REG_SZ, ShellExecute, "x:/pathToYourMusicPlayer/MusicPlayer.exe")
+*/
+
+/* My pinout:
+    Encoder0: Button 9, Rotary 4,3
+    Encoder1: Button 2, Rotary 7,6
+    // Pin 7 and 3 is an interrupt 
+*/
+
+
