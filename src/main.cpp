@@ -56,13 +56,13 @@ void printSliderValues(){
 void checkEncoders(){
   //GAMING
   //Emulate an axis
-  if (Gaming > 0 && Gaming < 204){
+  if (Gaming > 0 && Gaming < 208){
     analogSliderValues[0]=Gaming*5;   
   }
   //Lock if it's too high
-  else if (Gaming >= 204){
-    analogSliderValues[0]=1020;
-    knobGaming.write(204);
+  else if (Gaming >= 208){
+    analogSliderValues[0]=1040;
+    knobGaming.write(208);
   //Lock if it's too low 
   }else{
     analogSliderValues[0]=0;
@@ -70,13 +70,13 @@ void checkEncoders(){
   }
   //MUSIC
   //Emulate an axis
-  if (Music > 0 && Music < 204){
+  if (Music > 0 && Music < 208){
     analogSliderValues[1]= Music*5;
   }
   //Lock if it's too high
-  else if (Music >= 204){
-    analogSliderValues[1]=1020;
-    knobMusic.write(204);
+  else if (Music >= 208){
+    analogSliderValues[1]=1040;
+    knobMusic.write(208);
   //Lock if it's too low 
   }else{
     analogSliderValues[1]=0;
@@ -86,11 +86,11 @@ void checkEncoders(){
 
 void checkButtons(){
   unsigned long time_now = millis();
-  if (encoder_button0.isSingleClick())
+  if (encoder_button1.isSingleClick())
   {
     Consumer.write(MEDIA_VOLUME_MUTE);
   }
-  if (encoder_button0.isDoubleClick())
+  if (encoder_button1.isDoubleClick())
   {
     Keyboard.press(KEY_LEFT_WINDOWS);
     Keyboard.press(KEY_L);
@@ -99,7 +99,7 @@ void checkButtons(){
       Keyboard.release(KEY_L);
     }
   }
-  if (encoder_button0.isLongClick())
+  if (encoder_button1.isLongClick())
   {
     Keyboard.press(KEY_RIGHT_CTRL);
     Keyboard.press(KEY_F9);
@@ -108,16 +108,16 @@ void checkButtons(){
       Keyboard.release(KEY_F9);
     }
   }
-  if (encoder_button1.isSingleClick())
+  if (encoder_button0.isSingleClick())
   {
     Consumer.write(MEDIA_PLAY_PAUSE);
   }
-  if (encoder_button1.isDoubleClick())
+  if (encoder_button0.isDoubleClick())
   {
     Consumer.write(CONSUMER_EMAIL_READER); 
     //need to set up in registry, see at the bottom
   }
-  if (encoder_button1.isLongClick())
+  if (encoder_button0.isLongClick())
   {
     Consumer.write(MEDIA_NEXT);
   }
