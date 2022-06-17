@@ -9,7 +9,7 @@
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_OPTIMIZE_INTERRUPTS
 const int PRESS_TIME = 15;
-const int NUM_SLIDERS = 3;
+const int NUM_SLIDERS = 2;
 int analogSliderValues[NUM_SLIDERS];
 int Gaming, Music;
 //Encoder
@@ -56,30 +56,30 @@ void printSliderValues(){
 void checkEncoders(){
   //GAMING
   //Emulate an axis
-  if (Gaming > 0 && Gaming < 208){
-    analogSliderValues[1]=Gaming*5;   
+  if (Gaming > 0 && Gaming < 204){
+    analogSliderValues[0]=Gaming*5;   
   }
   //Lock if it's too high
-  else if (Gaming >= 208){
-    analogSliderValues[1]=1024;
-    knobGaming.write(208);
+  else if (Gaming >= 204){
+    analogSliderValues[0]=1023;
+    knobGaming.write(204);
   //Lock if it's too low 
   }else{
-    analogSliderValues[1]=0;
+    analogSliderValues[0]=0;
     knobGaming.write(0);
   }
   //MUSIC
   //Emulate an axis
-  if (Music > 0 && Music < 208){
-    analogSliderValues[2]= Music*5;
+  if (Music > 0 && Music < 204){
+    analogSliderValues[1]= Music*5;
   }
   //Lock if it's too high
-  else if (Music >= 208){
-    analogSliderValues[2]=1024;
-    knobMusic.write(208);
+  else if (Music >= 204){
+    analogSliderValues[1]=1023;
+    knobMusic.write(204);
   //Lock if it's too low 
   }else{
-    analogSliderValues[2]=0;
+    analogSliderValues[1]=0;
     knobMusic.write(0);
   }
 }
